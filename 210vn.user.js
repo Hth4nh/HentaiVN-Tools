@@ -1,12 +1,13 @@
 // ==UserScript==
 // @name         HentaiVN Tools
 // @namespace    https://github.com/hth4nh/HentaiVN-Tools
-// @version      0.3.1
+// @version      0.3.2
 // @description  Some additional features for HentaiVN website
 // @author       Hth4nh
 // @include      http*://hentaivn.*/*
 // @icon         https://www.google.com/s2/favicons?sz=64&domain=210vn.net
 // @grant        none
+// @run-at       document-start
 // ==/UserScript==
 
 /**
@@ -15,6 +16,7 @@
  * Bấm PageUp hoặc PageDown để di chuyển lên/xuống
  *
  */
+
 if (window.location.pathname == '/list-random.php') {
     document.head.insertAdjacentHTML('beforeend', '<link href="https://static.htvncdn.net/css/css-xx33-main.min.css?cache=4" rel="stylesheet" type="text/css"><link href="https://static.htvncdn.net/css/css-106-all.min.css?cache=2" rel="stylesheet" type="text/css">');
 }
@@ -22,8 +24,7 @@ let css = document.createElement('style');
 document.head.insertAdjacentElement('beforeend', css);
 
 
-
-if (window.location.pathname == '/forum/search-plus.php') {
+function searchPlus() {
     let chars = [];
     let origin = document.querySelector(".ul-search");
     let elems = document.querySelectorAll(".ul-search > li");
@@ -66,19 +67,6 @@ function removeElems(...queries) {
     changeStyle(queries.join(", "), style);
 }
 
-function resize(diff = 0) {
-    let sum = size + diff;
-    if (sum < 0 || sum > 100) return;
-    size += diff;
-    let img = document.getElementById('image');
-    if (!img) return;
-    let imgScrolled = window.scrollY - img.offsetTop;
-    let oldHeight = img.scrollHeight;
-    img.style.width = `${size}%`;
-    let newScrollY = imgScrolled * img.scrollHeight / oldHeight + img.offsetTop;
-    window.scrollTo(0, newScrollY);
-}
-
 let scrolling = 0;
 let scrollTmp = 0;
 function scroll(diff = 0) {
@@ -91,7 +79,7 @@ function scroll(diff = 0) {
 
     setTimeout(() => {
         scrolling = 0;
-    }, 300);
+    }, 250);
 
 
     scrollTmp = window.scrollY + diff;
@@ -109,7 +97,8 @@ let horror = changeTagsColor([55, 122, 26, 66, 207, 128, 89, 119], "maroon");
 let furry = changeTagsColor([202, 25, 127, 22], "darkslateblue");
 let favorite = changeTagsColor([37, 99], "green");
 
-changeStyle("#image", 'max-width: calc(100% - 10px); padding: 0; margin:auto; border: 5px solid cyan; border-bottom : 0');
+let size = 60;
+changeStyle("#image", `width: ${size}%; max-width: calc(100% - 10px); padding: 0; margin:auto; border: 5px solid cyan; border-bottom : 0`);
 changeStyle("#image > img", 'border: 0; background-color: red; max-width: 100%; min-width: 100%; min-height: 20px; margin-bottom: 0; border-bottom: 5px solid cyan;');
 changeStyle("#head, .nav-login, .bot-episode, #inner-watchxemthongtin, .head-nav, .footer > p", 'max-width: calc(100% - 10px); margin: auto;');
 changeStyle(".buttonhide, .chon-chap", 'margin-bottom: 15px;');
@@ -119,32 +108,46 @@ changeStyle(".right_ps", 'float: none; margin:auto;');
 changeStyle(".ul-search > li", 'margin: 1px 2.3%; width: 20%');
 changeStyle(".ul-search", 'border: #777 0.5px solid; border-bottom: 0; margin-bottom: 0; padding: 10px');
 changeStyle(".ul-search:last-of-type", 'border-bottom: #777 0.5px solid; margin-bottom: 10px');
+changeStyle(".view-top-1 > a", 'color: #44b9fa');
+changeStyle(".des-same > a:visited, .box-description > a:visited, .view-top-1 > a:visited", 'color: #9e9e9e');
 
 removeElems("#qxx", ".right_ps > p", "#qx-300x250", ".qx_main", ".qx_main2");
 
 
+function resize(diff = 0) {
+    let sum = size + diff;
+    if (sum < 20 || sum > 100) return;
+    size += diff;
+    let img = document.getElementById('image');
+    if (!img) return;
+    let imgScrolled = window.scrollY - img.offsetTop;
+    let oldHeight = img.scrollHeight;
+    img.style.width = `${size}%`;
+    let newScrollY = imgScrolled * img.scrollHeight / oldHeight + img.offsetTop;
+    window.scrollTo(0, newScrollY);
+}
 
-
-
-
-
-let size = 60;
-resize();
-
-document.body.addEventListener('keydown', event => {
-    //console.log(event);
-    if (event.code == 'PageDown') {
-        event.preventDefault();
-        scroll(400);
+document.onreadystatechange = () => {
+    if (document.readyState === "interactive") {
+        if (window.location.pathname == '/forum/search-plus.php') {
+            searchPlus();
+        }
+        document.body.addEventListener('keydown', event => {
+            //console.log(event);
+            if (event.code == 'PageDown') {
+                event.preventDefault();
+                scroll(400);
+            }
+            if (event.code == 'PageUp') {
+                event.preventDefault();
+                scroll(-400);
+            }
+            if (event.shiftKey && event.code == 'NumpadAdd') {
+                resize(+10);
+            }
+            if (event.shiftKey && event.code == 'NumpadSubtract') {
+                resize(-10);
+            }
+        });
     }
-    if (event.code == 'PageUp') {
-        event.preventDefault();
-        scroll(-400);
-    }
-    if (event.shiftKey && event.code == 'NumpadAdd') {
-        resize(+10);
-    }
-    if (event.shiftKey && event.code == 'NumpadSubtract') {
-        resize(-10);
-    }
-});
+};
