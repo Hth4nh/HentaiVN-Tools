@@ -4,20 +4,10 @@
 		"page": "background.html"
 	},
 	"browser_action": {
-		"default_title": "210VN Buff",
-		"default_icon": {
-			"16": "icon/icon16.png",
-			"32": "icon/icon32.png"
-		}
+		"default_title": "210VN Buff"
 	},
 	"description": "Buff",
 	"manifest_version": 2,
-	"icons": {
-		"16": "icon/icon16.png",
-		"32": "icon/icon32.png",
-		"64": "icon/icon64.png",
-		"128": "icon/icon128.png"
-	},
 	"name": "210VN Buff",
 	"permissions": [
 		"background",
